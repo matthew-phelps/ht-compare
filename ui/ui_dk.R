@@ -23,19 +23,19 @@ edu <- edu[, lapply(.SD, enc2native)]
 
 
 outcome_names_treatment <-
-  merge(data.table(hjertetal_code = grep("b", names(shiny_dat), value = TRUE)),
+  merge(data.table(hjertetal_code = grep("b", names(dat_new), value = TRUE)),
         outcome_descriptions,
         by = "hjertetal_code")[, .(hjertetal_code, name_dk, name_en)]
 colnames(outcome_names_treatment) <-
   c("hjertetal_code", "name_dk", "name_en")
 outcome_names_med <-
-  merge(data.table(hjertetal_code = grep("m", names(shiny_dat), value = TRUE)),
+  merge(data.table(hjertetal_code = grep("m", names(dat_new), value = TRUE)),
         outcome_descriptions,
         by = "hjertetal_code")[, .(hjertetal_code, name_dk, name_en)]
 colnames(outcome_names_med) <-
   c("hjertetal_code", "name_dk", "name_en")
 outcome_names_diag <-
-  merge(data.table(hjertetal_code = grep("d", names(shiny_dat), value = TRUE)),
+  merge(data.table(hjertetal_code = grep("d", names(dat_new), value = TRUE)),
         outcome_descriptions,
         by = "hjertetal_code")[, .(hjertetal_code, name_dk, name_en)]
 colnames(outcome_names_diag) <-
@@ -61,13 +61,12 @@ aggr_choices <-
   data.table(
     name_dk = c("Alder",
                 "Uddannelse",
-                "Kommune",
                 "Region",
                 "År"),
     name_dk_long = c("Aldersgruppe",
                      "Uddannelsesgruppe",
-                     "Kommune",
                      "Region",
                      "År"),
-    name_ht = c("age", "edu", "kom", "region", "national")
+    name_ht = c("age", "edu", "region", "national")
   )
+row.names(aggr_choices) <- aggr_choices$name_dk
