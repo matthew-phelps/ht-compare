@@ -15,7 +15,6 @@ if (lang == "dk") {
 }
 
 
-
 # OLD HJERTETAL DATA ------------------------------------------------------
 data_files <-
   list.files("data/old_ht",

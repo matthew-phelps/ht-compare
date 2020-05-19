@@ -18,9 +18,10 @@ tabPanel("Main",
          ),
          mainPanel(
            tabsetPanel(
-             tabPanel("Absolute", plotOutput(outputId = "diff_absolute")),
-             tabPanel("Percentage", plotOutput(outputId = "diff_relative"))
-           ),
+             tabPanel("Raw", plotOutput(outputId = "raw_data")),
+             tabPanel("Percentage", plotOutput(outputId = "diff_relative")),
+             tabPanel("Absolute", plotOutput(outputId = "diff_absolute"))
+             ),
            
            fluidRow(DTOutput("tables_t"))
          )

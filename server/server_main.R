@@ -1,3 +1,6 @@
+# main server
+
+
 outcomeCode <- reactive({
   # Connect the input in normal language to the hjertetal_code. This is so we
   # can change the description without having to rename allll the datasets.
@@ -44,58 +47,7 @@ dataDifference <- reactive({
   
 })
 
-
-
-output$diff_absolute <- renderPlot({
-  x <- dataDifference()
-  ggplot(x) +
-    geom_line(aes(
-      x = grouping,
-      y = diff_absolute,
-      group = sex,
-      color = sex
-    ),
-    size = 1.5) +
-    theme_classic() +
-    geom_hline(aes(yintercept = 0), linetype = 2) +
-    ylab("Difference (counts)") +
-    ggtitle(paste0(input$var, " (absolute difference)")) +
-    theme(plot.title = element_text(size = 22, face = "bold"))
-  
-  
-})
-
-output$diff_relative <- renderPlot({
-  x <- dataDifference()
-  
-  ggplot(x) +
-    geom_line(
-      mapping = aes(
-        x = grouping,
-        y = diff_relative,
-        group = sex,
-        color = sex
-      ),
-      size = 1.5
-    ) +
-    geom_ribbon(aes(
-      x = grouping,
-      ymin = -5,
-      ymax = 5,
-      group = sex
-    ),
-    fill = "grey",
-    alpha = 0.2) +
-    theme_classic() +
-    geom_hline(aes(yintercept = 0), linetype = 2) +
-    ylab("Difference (%)") +
-    coord_cartesian(ylim = c(-10, 10))
-})
-
-
-
-
-output$tables_t <- renderDT({
+dataDiffTotals <- reactive({
   x <- dataDifference()
   
   var_selected <- variable_ui[var_dk == input$var, code_name]
@@ -119,6 +71,80 @@ output$tables_t <- renderDT({
   
   setnames(x, c("year", "grouping", "my count", "SIF count", "difference", "difference (%)"))
   
+  x
+})
+
+
+
+output$diff_absolute <- renderPlot({
+  x <- dataDiffTotals()
+  ggplot(x) +
+    geom_line(aes(
+      x = grouping,
+      y = difference,
+      group = 1
+    ),
+    size = 1) +
+    theme_classic() +
+    geom_hline(aes(yintercept = 0), linetype = 2) +
+    ylab("Difference (counts)") +
+    ggtitle(paste0(input$var, " (absolute difference)")) +
+    theme(plot.title = element_text(size = 22, face = "bold"))
+  
+  
+})
+
+output$diff_relative <- renderPlot({
+  x <- dataDiffTotals()
+  
+  ggplot(x) +
+    geom_line(
+      mapping = aes(
+        x = grouping,
+        y = `difference (%)`,
+        group = 1
+      ),
+      size = 1
+    ) +
+    geom_ribbon(aes(
+      x = grouping,
+      ymin = -5,
+      ymax = 5,
+      group = 1
+    ),
+    fill = "green",
+    alpha = 0.2) +
+    theme_classic() +
+    geom_hline(aes(yintercept = 0), linetype = 2) +
+    geom_hline(aes(yintercept = 10), linetype = 2, color = "grey85") +
+    ylab("Difference (%)") +
+    coord_cartesian(ylim = c(-10, 70))
+})
+
+
+output$raw_data <- renderPlot({
+  a <- melt(dataDiffTotals(), id.vars = "grouping", measure.vars = c("my count", "SIF count"))
+  ggplot(a) +
+    geom_line(
+      mapping = aes(
+        x = grouping,
+        y = value,
+        group = variable,
+        color = variable
+      ),
+      size = 1
+    ) +
+    theme_classic() +
+    geom_hline(aes(yintercept = 0), linetype = 2) +
+    scale_color_manual(values = c("red", "grey35")) +
+    ylab("Raw counts")
+    
+})
+
+
+
+output$tables_t <- renderDT({
+  x <- dataDiffTotals()
   DT::datatable(x,
                 extensions = "Buttons",
                 options = list(dom = "B", buttons = c("excel"),
